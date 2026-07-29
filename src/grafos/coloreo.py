@@ -18,6 +18,7 @@ def colorear_grafo(grafo):
     return colores
 
 def verificar_coloreo(grafo, colores):
+     # Comprueba que ningún par de vértices adyacentes comparta el mismo color
     for vertice in grafo:
         for vecino in grafo[vertice]:
             if colores[vertice] == colores[vecino]:
@@ -25,6 +26,7 @@ def verificar_coloreo(grafo, colores):
     return True
 
 def resumen_coloreo(colores):
+    # Se agrupa y muestra los vértices que comparten el mismo color
     grupos = {}
     for vertice, color in colores.items():
         grupos.setdefault(color, []).append(vertice)
@@ -33,14 +35,4 @@ def resumen_coloreo(colores):
     for color, vertices in grupos.items():
         print(f"  Color {color}: {vertices}")
 
-grafo_conflicto = {
-    "A": {"B": 1, "C": 1},
-    "B": {"A": 1, "C": 1},
-    "C": {"A": 1, "B": 1, "D": 1},
-    "D": {"C": 1}
-}
 
-resultado = colorear_grafo(grafo_conflicto)
-print(resultado)
-verificar_coloreo(grafo_conflicto,resultado)
-resumen_coloreo(resultado)

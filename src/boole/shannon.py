@@ -5,28 +5,24 @@ from collections import Counter
 
 
 def frecuencias(texto):
-    """Cuenta cuantas veces aparece cada simbolo en el texto."""
+    #Secuenta cuantas veces aparece cada simbolo en el texto.
     return dict(Counter(texto))
 
 
 def probabilidades(frecs, total):
-    """Convierte frecuencias en probabilidades (frecuencia / total)."""
+    #Se convierte frecuencias en probabilidades (frecuencia / total).
     return {simbolo: cuenta / total for simbolo, cuenta in frecs.items()}
 
 
 
 def entropia(probs):
-    """
-    H = - sum(p_i * log2(p_i))
-    Cada termino mide, en bits, cuanta informacion aporta en promedio
-    ese simbolo. Se usa log2 porque el bit es la unidad natural de
-    informacion (una pregunta de si/no).
-    """
+    #Se calcula la entroía de Shannon
     return -sum(p * math.log2(p) for p in probs.values() if p > 0)
 
 
 
 def analizar_texto(texto, nombre="Texto"):
+    #Se calculan las funciones anteriores sobre un texto y se imprime e análisis
     total = len(texto)
     frecs = frecuencias(texto)
     probs = probabilidades(frecs, total)
@@ -42,7 +38,7 @@ def analizar_texto(texto, nombre="Texto"):
 
 
 def comparar(texto1, texto2):
-    """Calcula la entropia de dos textos y explica cual es mas variado."""
+    #Se calcula la entropia de dos textos y explica cual es mas variado.
     H1, _, _ = analizar_texto(texto1, "Texto 1")
     H2, _, _ = analizar_texto(texto2, "Texto 2")
 
@@ -59,7 +55,7 @@ def comparar(texto1, texto2):
 
 
 class NodoHuffman:
-    """Nodo del arbol de Huffman. simbolo=None en nodos internos."""
+    # Estructura de nodo para la construcción del árbol binario
     def __init__(self, peso, simbolo=None, izq=None, der=None):
         self.peso = peso
         self.simbolo = simbolo
@@ -67,12 +63,12 @@ class NodoHuffman:
         self.der = der
 
     def __lt__(self, otro):
-        # necesario para que heapq pueda comparar nodos por peso
+        # Permite la ordenación en el heap basada en la frecuencia
         return self.peso < otro.peso
 
 
 def arbol_huffman(frecs):
-
+    # Construye el árbol de Huffman utilizando una cola de prioridad
     heap = [NodoHuffman(peso, simbolo) for simbolo, peso in frecs.items()]
     heapq.heapify(heap)
 
@@ -80,7 +76,7 @@ def arbol_huffman(frecs):
     if len(heap) == 1:
         unico = heap[0]
         return NodoHuffman(unico.peso, izq=unico)
-
+    # Fusión iterativa de los dos nodos con menor peso
     while len(heap) > 1:
         a = heapq.heappop(heap)
         b = heapq.heappop(heap)
@@ -91,6 +87,7 @@ def arbol_huffman(frecs):
 
 
 def generar_codigos(nodo, prefijo="", codigos=None):
+    #Se recorre el árbol recursivamente para asignar prefijos binarios
     if codigos is None:
         codigos = {}
     if nodo.simbolo is not None:
@@ -104,6 +101,7 @@ def generar_codigos(nodo, prefijo="", codigos=None):
 
 
 def longitud_promedio_huffman(frecs, codigos, total):
+    #Se calcula la longitud ponderada de los códigos asignado
     return sum(frecs[s] * len(codigos[s]) for s in frecs) / total
 
 
@@ -127,13 +125,3 @@ def analizar_huffman(texto):
 
 
 
-texto_repetitivo = "AAAAAAAAAA"
-texto_variado = "el veloz murcielago hindu comia feliz cardillo y kiwi"
-
-comparar(texto_repetitivo, texto_variado)
-
-print("\n" + "=" * 60)
-print("Extension opcional: codigo de Huffman")
-print("=" * 60)
-analizar_huffman(texto_repetitivo)
-analizar_huffman(texto_variado)
