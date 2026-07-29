@@ -1,10 +1,12 @@
 from itertools import product
 
 def a_binario(minterm, n_vars):
+    #Se convierte un minitérmino entero a su representación binaria rellena
     return format(minterm, f"0{n_vars}b")
 
 
 def difieren_en_un_bit(t1, t2):
+    #Se identifica si dos términos difieren exactamente en una posición de bit
     if len(t1) != len(t2):
         return False, None
     diferencias = []
@@ -21,12 +23,13 @@ def difieren_en_un_bit(t1, t2):
 
 
 def combinar(t1, t2, idx):
-    """Combina dos terminos que difieren en la posicion idx, poniendo un guion ahi."""
+    #Se combina dos terminos que difieren en la posicion idx poniendo un guion ahi.
     return t1[:idx] + "-" + t1[idx + 1:]
 
 
 
 def simplificar_minterminos(minterminos, n_vars):
+    #Algoritmo de Quine-McCluskey para agrupar términos sistemáticamente
     terminos_actuales = [a_binario(m, n_vars) for m in minterminos]
     implicantes_primos = set()
 
@@ -58,6 +61,7 @@ def simplificar_minterminos(minterminos, n_vars):
 
 
 def termino_a_texto(termino, nombres_vars):
+    #Se convierte un término binario con guiones a literales de álgebra booleana
     partes = []
     for bit, var in zip(termino, nombres_vars):
         if bit == "1":
@@ -69,19 +73,20 @@ def termino_a_texto(termino, nombres_vars):
 
 
 def expresion_simplificada_texto(implicantes_primos, nombres_vars):
+    # Une los implicantes primos mediante conectores OR (Suma de Productos)
     terminos_texto = [termino_a_texto(t, nombres_vars) for t in implicantes_primos]
     return " or ".join(f"({t})" for t in terminos_texto)
 
 
 
 def evaluar_por_minterminos(minterminos, n_vars, valores):
-    """Evalua la funcion original: 1 si la combinacion de entrada es un mintermino."""
+    #Seevalua la funcion original: 1 si la combinacion de entrada es un mintermino.
     indice = int("".join(str(v) for v in valores), 2)
     return 1 if indice in minterminos else 0
 
 
 def evaluar_implicantes(implicantes_primos, valores):
-    """Evalua la expresion simplificada (OR de los implicantes primos)."""
+    #Se evalua la expresion simplificada OR de los implicantes primos.
     for termino in implicantes_primos:
         if all(bit == "-" or int(bit) == v for bit, v in zip(termino, valores)):
             return 1
@@ -89,7 +94,7 @@ def evaluar_implicantes(implicantes_primos, valores):
 
 
 def verificar_equivalencia(minterminos, implicantes_primos, n_vars):
-    """Compara la tabla de verdad original vs la simplificada en las 2^n_vars filas."""
+    #Se compara la tabla de verdad original vs la simplificada en las 2^n_vars filas.
     for valores in product([0, 1], repeat=n_vars):
         original = evaluar_por_minterminos(minterminos, n_vars, valores)
         simplificada = evaluar_implicantes(implicantes_primos, valores)
@@ -99,22 +104,5 @@ def verificar_equivalencia(minterminos, implicantes_primos, n_vars):
 
 
 
-casos = [
-        {"minterminos": [1, 3, 5, 7], "n_vars": 3, "nombres": ["A", "B", "C"]},
-        {"minterminos": [0, 2, 4, 6, 8, 10, 12, 14], "n_vars": 4, "nombres": ["A", "B", "C", "D"]},
-    ]
 
-for caso in casos:
-    minterminos = caso["minterminos"]
-    n_vars = caso["n_vars"]
-    nombres = caso["nombres"]
-
-    implicantes = simplificar_minterminos(minterminos, n_vars)
-    expresion = expresion_simplificada_texto(implicantes, nombres)
-    es_equivalente = verificar_equivalencia(minterminos, implicantes, n_vars)
-
-    print(f"\nMinterminos: {minterminos}  (variables: {nombres})")
-    print("Salida de mi programa (implicantes primos, binario):", implicantes)
-    print("Expresion simplificada:", expresion)
-    print("Verificacion (misma tabla de verdad que el original):", es_equivalente)
     

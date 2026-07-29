@@ -21,15 +21,19 @@ expresiones = [
 
 def tabla_verdad(func, variables):
     n = len(variables)
+    #Dibujo del encabezado de la tabla
     encabezado = " | ".join(variables) + " | Resultado"
     print(encabezado)
     print("-" * len(encabezado))
  
     filas = []
+    #Se evaluan todas las 2^n combinaciones binarias posibles 
     for combinacion in product([0, 1], repeat=n):
         valores = dict(zip(variables, combinacion))
         resultado = func(**valores)
+        #Se guarda el par de valores de entrada y el resultado
         filas.append((combinacion, resultado))
+        #Se crea el String con los valores de entrada y salida
         fila_texto = " | ".join(str(v) for v in combinacion) + f" | {resultado}"
         print(fila_texto)
  
@@ -38,11 +42,4 @@ def tabla_verdad(func, variables):
 def evaluar(func, **valores):
     return func(**valores)
 
-for nombre, func, variables in expresiones:
-        print(f"\nTabla de verdad de: {nombre}")
-        tabla_verdad(func, variables)
- 
-print("\nEjemplo de evaluacion puntual:")
-print("expr1(A=1, B=0, C=0) =", evaluar(expr1, A=1, B=0, C=0))
-print("expr2(A=1, B=1, C=1) =", evaluar(expr2, A=1, B=1, C=1))
-print("expr3(A=0, B=0, C=1) =", evaluar(expr3, A=0, B=0, C=1))
+
